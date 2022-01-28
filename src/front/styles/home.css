@@ -5,3 +5,18 @@
     one more css for each page that will contain the selected used 
     on that page only (the ones not reused in other pages).
 */
+.InputGroup {
+  height: 10px;
+  width: 10px;
+}
+.Row {
+  position: relative;
+}
+col {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
