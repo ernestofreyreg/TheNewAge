@@ -61,7 +61,7 @@ export function NftView(props) {
               <FormControl
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
-                placeholder="Url"
+                placeholder="Quantity"
                 value={props.value.quantity}
                 onChange={(ev) =>
                   props.onChange({

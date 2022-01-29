@@ -20,7 +20,41 @@ export function CreateCollection() {
     description: "",
     attributes: "",
     url: "",
+    mainnet: false,
   });
+
+  const handleMint = async () => {
+    if (typeof global.ethereum !== "undefined") {
+      try {
+        await requestAccount();
+        const provider = new ethers.providers.Web3Provider(global.ethereum);
+        const signer = provider.getSigner();
+
+        const contract = new ethers.Contract(
+          learnpackAddress,
+          Learnpack.abi,
+          signer
+        );
+        set({ transferring: true });
+        const transaction = await contract.safeTransferFrom(
+          global.ethereum.selectedAddress,
+          address,
+          tokenId,
+          amount,
+          ethers.utils.arrayify(0)
+        );
+        await transaction.wait();
+        set({ transferring: false });
+        get().fetchBalances();
+      } catch (err) {
+        console.log("Error: ", err);
+        set({ transferring: false });
+      }
+    }
+  };
+  const requestAccount = async () => {
+    await global.ethereum.request({ method: "eth_requestAccounts" });
+  };
 
   const handleSave = async () => {
     try {
@@ -33,10 +67,7 @@ export function CreateCollection() {
           },
           body: JSON.stringify({
             ...data,
-            name: collection.name,
-            description: collection.description,
-            attributes: collection.attributes,
-            url: collection.url,
+            ...collection,
             nfts: nfts,
           }),
         }
@@ -57,20 +88,22 @@ export function CreateCollection() {
         description: data.description,
         attributes: data.attributes,
         url: data.url,
+        mainnet: data.mainnet,
       });
       setNfts(data.nfts);
     }
   }, [data]);
 
+  useEffect(() => {
+    global.ethereum.on("accountsChanged", function (accounts) {
+      console.log(accounts);
+    });
+  }, []);
+
   return (
     <div>
       <h1>Create NFT Collection!</h1>
-      <Form.Check
-        type="switch"
-        id="custom-switch"
-        label="MainNet"
-        checked={data && data.mainnet}
-      />
+      {global?.ethereum?.selectedAddress}
       <div className="add-collection">
         <CollectionView
           value={collection}

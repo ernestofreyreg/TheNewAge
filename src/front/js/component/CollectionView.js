@@ -6,6 +6,7 @@ import {
   FormControl,
   InputGroup,
   Button,
+  Form,
 } from "react-bootstrap";
 
 export function CollectionView(props) {
@@ -14,6 +15,21 @@ export function CollectionView(props) {
       <Card.Body>
         <Row>
           <Col>
+            <InputGroup size="sm" className="mb-3">
+              <Form.Check
+                type="switch"
+                id="custom-switch"
+                label="MainNet"
+                onChange={(ev) => {
+                  props.onChange({
+                    ...props.value,
+                    mainnet: ev.target.checked,
+                  });
+                }}
+                checked={props.value.mainnet}
+              />
+            </InputGroup>
+
             <InputGroup size="sm" className="mb-3">
               <FormControl
                 aria-label="Small"
@@ -28,6 +44,7 @@ export function CollectionView(props) {
                 }
               />
             </InputGroup>
+
             <InputGroup size="sm" className="mb-3">
               <FormControl
                 aria-label="Small"
