@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { CollectionView } from "./CollectionView";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import "../../styles/inputs.scss";
 import { NftView } from "./NftView";
 import { useParams } from "react-router-dom";
 import useSWR, { useSWRConfig } from "swr";
 import { fetcher } from "../store/api";
+import { ContractFactory, providers } from "ethers";
+import NFTForgeContract from "./NFTForge.json";
 
 export function CreateCollection() {
   const params = useParams();
@@ -27,25 +28,63 @@ export function CreateCollection() {
     if (typeof global.ethereum !== "undefined") {
       try {
         await requestAccount();
-        const provider = new ethers.providers.Web3Provider(global.ethereum);
+        const provider = new providers.Web3Provider(global.ethereum);
         const signer = provider.getSigner();
 
-        const contract = new ethers.Contract(
-          learnpackAddress,
-          Learnpack.abi,
+        // deploy contract here
+        const NFTForge = new ContractFactory(
+          NFTForgeContract.abi,
+          NFTForgeContract.bytecode,
           signer
         );
-        set({ transferring: true });
-        const transaction = await contract.safeTransferFrom(
-          global.ethereum.selectedAddress,
-          address,
-          tokenId,
-          amount,
-          ethers.utils.arrayify(0)
+
+        const nftForge = await NFTForge.deploy(
+          process.env.BACKEND_URL + "/api/opensea/",
+          nfts.map((nft) => nft.quantity)
         );
-        await transaction.wait();
-        set({ transferring: false });
-        get().fetchBalances();
+
+        await nftForge.deployed();
+        console.log("NFTForge deployed to: ", nftForge.address);
+        try {
+          const response = await fetch(
+            process.env.BACKEND_URL + "/api/collection/" + params.id,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ...data,
+                ...collection,
+                nfts: nfts,
+                contract_account: nftForge.address,
+                owner_account: global?.ethereum?.selectedAddress,
+              }),
+            }
+          );
+          if (response.status === 204) {
+            mutate("/api/collection/" + params.id);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        // const contract = new ethers.Contract(
+        //   learnpackAddress,
+        //   Learnpack.abi,
+        //   signer
+        // );
+
+        // set({ transferring: true });
+        // const transaction = await contract.safeTransferFrom(
+        //   global.ethereum.selectedAddress,
+        //   address,
+        //   tokenId,
+        //   amount,
+        //   ethers.utils.arrayify(0)
+        // );
+        // await transaction.wait();
+        // set({ transferring: false });
+        // get().fetchBalances();
       } catch (err) {
         console.log("Error: ", err);
         set({ transferring: false });
@@ -94,11 +133,11 @@ export function CreateCollection() {
     }
   }, [data]);
 
-  useEffect(() => {
-    global.ethereum.on("accountsChanged", function (accounts) {
-      console.log(accounts);
-    });
-  }, []);
+  // useEffect(() => {
+  //   global.ethereum.on("accountsChanged", function (accounts) {
+  //     console.log(accounts);
+  //   });
+  // }, []);
 
   return (
     <div>
@@ -109,6 +148,8 @@ export function CreateCollection() {
           value={collection}
           onChange={(value) => setCollection(value)}
           onSave={handleSave}
+          onMint={handleMint}
+          minted={data && data.contract_account !== null}
         />
         {nfts.map((nft, index) => {
           return (

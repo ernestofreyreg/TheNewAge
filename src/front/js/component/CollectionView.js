@@ -88,14 +88,18 @@ export function CollectionView(props) {
               />
             </InputGroup>
           </Col>
-          <Col>
-            <Button variant="primary" size="lg">
-              MINT
-            </Button>
-            <Button variant="success" size="lg" onClick={props.onSave}>
-              Save
-            </Button>
-          </Col>
+          {props.minted ? (
+            <Col>Collection was Minted</Col>
+          ) : (
+            <Col>
+              <Button variant="primary" size="lg" onClick={props.onMint}>
+                Mint
+              </Button>
+              <Button variant="success" size="lg" onClick={props.onSave}>
+                Save
+              </Button>
+            </Col>
+          )}
         </Row>
       </Card.Body>
     </Card>

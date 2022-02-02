@@ -104,7 +104,17 @@ def create_collection():
     contract_account = data['contract_account']
     fee = data['fee']
     transferred = data['transferred']
-    collection = Collections(name=name,description=description,attributes=attributes,url=url,owner_account=owner_account,contract_account=contract_account,fee=fee,transferred=transferred) # do i need to add them all? 
+    collection = Collections(
+        name=name,
+        description=description,
+        attributes=attributes,
+        url=url,
+        owner_account=owner_account,
+        contract_account=contract_account,
+        fee=fee,
+        transferred=transferred,
+        mainnet=False
+    )  
     db.session.add(collection)
     db.session.commit()
 
@@ -122,6 +132,7 @@ def update_collections(collection_id):
     collection.contract_account = data['contract_account']
     collection.fee = data['fee']
     collection.transferred = data['transferred']
+    collection.mainnet = data['mainnet']
     nfts = NFTs.query.filter(NFTs.collection_id == collection_id)
     nfts.delete()
 
@@ -149,16 +160,16 @@ def get_collection_by_id(collection_id):
     return jsonify(collection.serialize()),200
 
 
-api.route('/opensea/<slug>/<nft_id>', methods=['GET'])
-def get_opensea_metadata():
-    collection = Collections.query.filter(Collections.slug == slug).first()
-    nft = Nfts.query.filter(Nfts.nft_id == nft_id).first()
+@api.route('/opensea/<nft_id>', methods=['GET'])
+def get_opensea_metadata(nft_id):
+    nft = NFTs.query.filter(NFTs.nft_id == nft_id).first()
+    if nft is None:
+        return "", 404
 
     return jsonify({
         'name': nft.name,
         'description': nft.description,
-        'image': nft.image_url,
-        'external_url': 'https://openseacreatures.io/%s' % token_id,
-        'attributes': nft.attributes
+        'image': f"https://ipfs.io/ipfs/{nft.image_url}",
+        # 'attributes': jonft.attributes
     }), 200
 
