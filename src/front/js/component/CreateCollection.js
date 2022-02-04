@@ -8,6 +8,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { fetcher } from "../store/api";
 import { ContractFactory, providers } from "ethers";
 import NFTForgeContract from "./NFTForge.json";
+import { Alert } from "react-bootstrap";
 
 export function CreateCollection() {
   const params = useParams();
@@ -15,7 +16,7 @@ export function CreateCollection() {
   const { mutate } = useSWRConfig();
 
   const [nfts, setNfts] = useState([]);
-
+  const [disabled, setDisabled] = useState(false);
   const [collection, setCollection] = useState({
     name: "",
     description: "",
@@ -23,6 +24,9 @@ export function CreateCollection() {
     url: "",
     mainnet: false,
   });
+  const [ethereumNetWork, setEthereumNetwork] = useState(
+    global.ethereum.chainId
+  );
 
   const handleMint = async () => {
     if (typeof global.ethereum !== "undefined") {
@@ -37,14 +41,19 @@ export function CreateCollection() {
           NFTForgeContract.bytecode,
           signer
         );
+        let nftForge;
+        if (!data.contract_account) {
+          nftForge = await NFTForge.deploy(
+            process.env.BACKEND_URL + "/api/opensea/",
+            nfts.map((nft) => nft.quantity)
+          );
 
-        const nftForge = await NFTForge.deploy(
-          process.env.BACKEND_URL + "/api/opensea/",
-          nfts.map((nft) => nft.quantity)
-        );
+          await nftForge.deployed();
+        } else {
+          nftForge = NFTForge.attach(data.contract_account);
+        }
+        const ids = await nftForge.getIds();
 
-        await nftForge.deployed();
-        console.log("NFTForge deployed to: ", nftForge.address);
         try {
           const response = await fetch(
             process.env.BACKEND_URL + "/api/collection/" + params.id,
@@ -56,7 +65,12 @@ export function CreateCollection() {
               body: JSON.stringify({
                 ...data,
                 ...collection,
-                nfts: nfts,
+                nfts: nfts.map((nft, index) => {
+                  return {
+                    ...nft,
+                    nft_id: ids[index].toString(),
+                  };
+                }),
                 contract_account: nftForge.address,
                 owner_account: global?.ethereum?.selectedAddress,
               }),
@@ -130,32 +144,42 @@ export function CreateCollection() {
         mainnet: data.mainnet,
       });
       setNfts(data.nfts);
+      setDisabled(!!data.contract_account);
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   global.ethereum.on("accountsChanged", function (accounts) {
-  //     console.log(accounts);
-  //   });
-  // }, []);
+  useEffect(() => {
+    global.ethereum.on("accountsChanged", function (accounts) {
+      console.log(accounts);
+      setEthereumNetwork(global.ethereum.chainId);
+    });
+  }, []);
 
   return (
-    <div>
+    <div className="text-center mt-5">
       <h1>Create NFT Collection!</h1>
       {global?.ethereum?.selectedAddress}
       <div className="add-collection">
+        {ethereumNetWork === "0x1" && (
+          <Alert variant={"primary"}>You are on the MainNet</Alert>
+        )}
+        {ethereumNetWork === "0x4" && (
+          <Alert variant={"warning"}>You are on the Rinkeby test network</Alert>
+        )}
         <CollectionView
           value={collection}
           onChange={(value) => setCollection(value)}
           onSave={handleSave}
           onMint={handleMint}
-          minted={data && data.contract_account !== null}
+          minted={data && data.contract_account}
+          readOnly={disabled}
         />
         {nfts.map((nft, index) => {
           return (
             <NftView
               value={nft}
               key={index}
+              readOnly={disabled}
               onChange={(value) => {
                 const newNfts = [...nfts];
                 newNfts[index] = value;
@@ -164,35 +188,42 @@ export function CreateCollection() {
             />
           );
         })}
-        <Button
-          onClick={() => {
-            setNfts([
-              ...nfts,
-              {
-                name: "",
-                description: "",
-                attributes: "",
-                quantity: 0,
-                image: "",
-                nft_id: "",
-                image_url: "",
-                contract_id: "",
-              },
-            ]);
-          }}
-        >
-          Add More
-        </Button>
-        <Button
-          variant="danger"
-          onClick={() => {
-            const list = [...nfts];
-            list.pop(nfts);
-            setNfts(list);
-          }}
-        >
-          Remove
-        </Button>
+
+        {!disabled && (
+          <div className="add-remove">
+            <Button
+              className="w-50"
+              onClick={() => {
+                setNfts([
+                  ...nfts,
+                  {
+                    name: "",
+                    description: "",
+                    attributes: "",
+                    quantity: 0,
+                    image: "",
+                    nft_id: "",
+                    image_url: "",
+                    contract_id: "",
+                  },
+                ]);
+              }}
+            >
+              Add More
+            </Button>
+            <Button
+              className="w-50"
+              variant="danger"
+              onClick={() => {
+                const list = [...nfts];
+                list.pop(nfts);
+                setNfts(list);
+              }}
+            >
+              Remove
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -144,7 +144,7 @@ def update_collections(collection_id):
         contract_id = x['contract_id']
         nft_id = x['nft_id']
         image_url = x['image_url']
-        nft = NFTs(name=name,description=description,quantity=quantity,attributes=attributes,image_url=image_url,collection_id=collection_id,contract_id=contract_id)
+        nft = NFTs(name=name,description=description,quantity=quantity,attributes=attributes,image_url=image_url,collection_id=collection_id,contract_id=contract_id,nft_id=nft_id)
         db.session.add(nft)
         
     

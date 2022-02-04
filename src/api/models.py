@@ -35,12 +35,12 @@ class NFTs(db.Model):
 class Collections(db.Model):
     __tablename__ = "collections"
     id = db.Column(db.Integer,primary_key= True)
-    name = db.Column(db.String(200),unique=False,nullable=False)
-    description = db.Column(db.String(200),unique=False,nullable=False)
-    attributes = db.Column(db.String(200),unique=False,nullable=False)
-    url = db.Column(db.String(200),unique=False,nullable=False)
-    owner_account = db.Column(db.String(200),unique=False,nullable=False)
-    contract_account = db.Column(db.String(200),unique=False,nullable=False)
+    name = db.Column(db.String(200),unique=False)
+    description = db.Column(db.String(200),unique=False)
+    attributes = db.Column(db.String(200),unique=False)
+    url = db.Column(db.String(200),unique=False)
+    owner_account = db.Column(db.String(200),unique=False)
+    contract_account = db.Column(db.String(200),unique=False)
     fee = db.Column(db.Integer)
     transferred = db.Column(db.Boolean)
     mainnet = db.Column(db.Boolean)

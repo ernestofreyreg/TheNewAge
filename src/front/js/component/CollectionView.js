@@ -16,26 +16,12 @@ export function CollectionView(props) {
         <Row>
           <Col>
             <InputGroup size="sm" className="mb-3">
-              <Form.Check
-                type="switch"
-                id="custom-switch"
-                label="MainNet"
-                onChange={(ev) => {
-                  props.onChange({
-                    ...props.value,
-                    mainnet: ev.target.checked,
-                  });
-                }}
-                checked={props.value.mainnet}
-              />
-            </InputGroup>
-
-            <InputGroup size="sm" className="mb-3">
               <FormControl
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
                 placeholder="Name"
                 value={props.value.name}
+                readOnly={props.readOnly}
                 onChange={(ev) =>
                   props.onChange({
                     ...props.value,
@@ -50,6 +36,7 @@ export function CollectionView(props) {
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
                 placeholder="Description"
+                readOnly={props.readOnly}
                 value={props.value.description}
                 onChange={(ev) =>
                   props.onChange({
@@ -64,6 +51,7 @@ export function CollectionView(props) {
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
                 placeholder="Attributes"
+                readOnly={props.readOnly}
                 value={props.value.atttributes}
                 onChange={(ev) =>
                   props.onChange({
@@ -78,6 +66,7 @@ export function CollectionView(props) {
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
                 placeholder="Url"
+                readOnly={props.readOnly}
                 value={props.value.url}
                 onChange={(ev) =>
                   props.onChange({
@@ -89,7 +78,7 @@ export function CollectionView(props) {
             </InputGroup>
           </Col>
           {props.minted ? (
-            <Col>Collection was Minted</Col>
+            <Col>Collection was minted</Col>
           ) : (
             <Col>
               <Button variant="primary" size="lg" onClick={props.onMint}>
@@ -105,3 +94,4 @@ export function CollectionView(props) {
     </Card>
   );
 }
+/// https://testnets-api.opensea.io/api/v1/asset/0xeead1c2e73c8e56006daac9965068ab8a5862e65/89709943143508079645487382081457606758645057766810080151039064118147953823045/?force_update=true

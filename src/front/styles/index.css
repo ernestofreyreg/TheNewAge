@@ -1,18 +1,7 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
-.InputGroup {
-  height: 10px;
-  width: 10px;
-}
-Row {
-  position: relative;
-}
-col {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+.add-remove {
+  display: flex;
+  justify-content: space-between;
 }

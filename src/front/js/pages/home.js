@@ -31,7 +31,10 @@ export const Home = () => {
 
   return (
     <div className="text-center mt-5">
-      <Button onClick={handleonClick}>Create NFT Collection</Button>
+      <h1 className="neonText">The New Age</h1>
+      <Button className="coloredbtn" onClick={handleonClick}>
+        Create NFT Collection
+      </Button>
     </div>
   );
 };

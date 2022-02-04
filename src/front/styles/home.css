@@ -20,3 +20,62 @@ col {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+.neonText {
+  color: #fff;
+  text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px rgb(204, 18, 173),
+    0 0 42px #bc13fe, 0 0 82px #bc13fe, 0 0 92px #bc13fe, 0 0 102px #bc13fe,
+    0 0 151px #bc13fe;
+  font-family: "Supermercado One", cursive;
+}
+.coloredbtn {
+  background-color: rgb(61, 61, 145);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.coloredbtn:hover {
+  background-image: linear-gradient(
+    to right,
+    #341cd4,
+    #5224d3,
+    #712cd2,
+    #8660d0,
+    #a953cf,
+    #cc45ce
+  );
+  animation: slidebg 5s linear infinite;
+}
+@keyframes slidebg {
+  to {
+    background-position: 20vw;
+  }
+}
+
+body {
+  background: hsla(299, 58%, 54%, 1);
+
+  /* Set up positioning */
+
+  background: linear-gradient(
+    90deg,
+    hsla(299, 58%, 54%, 1) 0%,
+    hsla(248, 77%, 47%, 1) 100%
+  );
+
+  background: -moz-linear-gradient(
+    90deg,
+    hsla(299, 58%, 54%, 1) 0%,
+    hsla(248, 77%, 47%, 1) 100%
+  );
+
+  background: -webkit-linear-gradient(
+    90deg,
+    hsla(299, 58%, 54%, 1) 0%,
+    hsla(248, 77%, 47%, 1) 100%
+  );
+
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#cc45ce", endColorstr="#341cd4", GradientType=1 );
+  background-repeat: no-repeat;
+}
