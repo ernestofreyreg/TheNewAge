@@ -14,6 +14,7 @@ export function CreateCollection() {
   const params = useParams();
   const { data, error } = useSWR("/api/collection/" + params.id, fetcher);
   const { mutate } = useSWRConfig();
+  const [isMinting, setMinting] = useState(false);
 
   const [nfts, setNfts] = useState([]);
   const [disabled, setDisabled] = useState(false);
@@ -29,8 +30,10 @@ export function CreateCollection() {
   );
 
   const handleMint = async () => {
+    await handleSave();
     if (typeof global.ethereum !== "undefined") {
       try {
+        setMinting(true);
         await requestAccount();
         const provider = new providers.Web3Provider(global.ethereum);
         const signer = provider.getSigner();
@@ -44,7 +47,7 @@ export function CreateCollection() {
         let nftForge;
         if (!data.contract_account) {
           nftForge = await NFTForge.deploy(
-            process.env.BACKEND_URL + "/api/opensea/",
+            process.env.BACKEND_URL + "/api/opensea/" + data.id + "/",
             nfts.map((nft) => nft.quantity)
           );
 
@@ -54,53 +57,34 @@ export function CreateCollection() {
         }
         const ids = await nftForge.getIds();
 
-        try {
-          const response = await fetch(
-            process.env.BACKEND_URL + "/api/collection/" + params.id,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                ...data,
-                ...collection,
-                nfts: nfts.map((nft, index) => {
-                  return {
-                    ...nft,
-                    nft_id: ids[index].toString(),
-                  };
-                }),
-                contract_account: nftForge.address,
-                owner_account: global?.ethereum?.selectedAddress,
+        const response = await fetch(
+          process.env.BACKEND_URL + "/api/collection/" + params.id,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...data,
+              ...collection,
+              nfts: nfts.map((nft, index) => {
+                return {
+                  ...nft,
+                  nft_id: ids[index].toString(),
+                };
               }),
-            }
-          );
-          if (response.status === 204) {
-            mutate("/api/collection/" + params.id);
+              contract_account: nftForge.address,
+              owner_account: global?.ethereum?.selectedAddress,
+            }),
           }
-        } catch (error) {
-          console.log(error);
+        );
+        if (response.status === 204) {
+          mutate("/api/collection/" + params.id);
         }
-        // const contract = new ethers.Contract(
-        //   learnpackAddress,
-        //   Learnpack.abi,
-        //   signer
-        // );
-
-        // set({ transferring: true });
-        // const transaction = await contract.safeTransferFrom(
-        //   global.ethereum.selectedAddress,
-        //   address,
-        //   tokenId,
-        //   amount,
-        //   ethers.utils.arrayify(0)
-        // );
-        // await transaction.wait();
-        // set({ transferring: false });
-        // get().fetchBalances();
+        setMinting(false);
       } catch (err) {
         console.log("Error: ", err);
+        setMinting(false);
         set({ transferring: false });
       }
     }
@@ -150,6 +134,10 @@ export function CreateCollection() {
 
   useEffect(() => {
     global.ethereum.on("accountsChanged", function (accounts) {
+      setCollection({
+        ...collection,
+        mainnet: global.ethereum.chainId === "0x1",
+      });
       console.log(accounts);
       setEthereumNetwork(global.ethereum.chainId);
     });
@@ -158,12 +146,12 @@ export function CreateCollection() {
   return (
     <div className="text-center mt-5">
       <h1>Create NFT Collection!</h1>
-      {global?.ethereum?.selectedAddress}
+
       <div className="add-collection">
-        {ethereumNetWork === "0x1" && (
+        {ethereumNetWork === "0x1" && !disabled && (
           <Alert variant={"primary"}>You are on the MainNet</Alert>
         )}
-        {ethereumNetWork === "0x4" && (
+        {ethereumNetWork === "0x4" && !disabled && (
           <Alert variant={"warning"}>You are on the Rinkeby test network</Alert>
         )}
         <CollectionView
@@ -173,13 +161,16 @@ export function CreateCollection() {
           onMint={handleMint}
           minted={data && data.contract_account}
           readOnly={disabled}
+          isMinting={isMinting}
         />
         {nfts.map((nft, index) => {
           return (
             <NftView
               value={nft}
               key={index}
+              mainnet={collection.mainnet}
               readOnly={disabled}
+              contract={data && data.contract_account}
               onChange={(value) => {
                 const newNfts = [...nfts];
                 newNfts[index] = value;
@@ -192,6 +183,7 @@ export function CreateCollection() {
         {!disabled && (
           <div className="add-remove">
             <Button
+              id="add"
               className="w-50"
               onClick={() => {
                 setNfts([
@@ -212,6 +204,7 @@ export function CreateCollection() {
               Add More
             </Button>
             <Button
+              id="remove"
               className="w-50"
               variant="danger"
               onClick={() => {

@@ -78,13 +78,26 @@ export function CollectionView(props) {
             </InputGroup>
           </Col>
           {props.minted ? (
-            <Col>Collection was minted</Col>
+            <Col>
+              Collection was minted on{" "}
+              {props.value.mainnet ? "MainNet" : "TestNet"}
+            </Col>
           ) : (
             <Col>
-              <Button variant="primary" size="lg" onClick={props.onMint}>
-                Mint
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={props.onMint}
+                disabled={props.isMinting}
+              >
+                {props.isMinting ? "Minting..." : "Mint"}
               </Button>
-              <Button variant="success" size="lg" onClick={props.onSave}>
+              <Button
+                variant="success"
+                size="lg"
+                onClick={props.onSave}
+                disabled={props.isMinting}
+              >
                 Save
               </Button>
             </Col>
@@ -94,4 +107,5 @@ export function CollectionView(props) {
     </Card>
   );
 }
-/// https://testnets-api.opensea.io/api/v1/asset/0xeead1c2e73c8e56006daac9965068ab8a5862e65/89709943143508079645487382081457606758645057766810080151039064118147953823045/?force_update=true
+/// https://testnets-api.opensea.io/api/v1/asset/0xe6217730066481F119DF5F7a0B14f72F1A9639E6/98850428836407784553050907173420271601140332659758010777662168625444928194600/?force_update=true
+/// https://testnets-api.opensea.io/api/v1/asset/0xe6217730066481F119DF5F7a0B14f72F1A9639E6/93735162273891872365242155050658751987858262278702072001032611869719857076759/?force_update=true

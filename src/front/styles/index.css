@@ -5,3 +5,7 @@
   display: flex;
   justify-content: space-between;
 }
+#remove {
+  background-color: rgb(112, 7, 7);
+  letter-spacing: 3px;
+}

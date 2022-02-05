@@ -11,7 +11,7 @@ class NFTs(db.Model):
     quantity = db.Column(db.Integer)
     attributes = db.Column(db.Text)
     collection_id = db.Column(db.Integer, db.ForeignKey('collections.id'),)
-    nft_id = db.Column(db.String(200), unique=True)
+    nft_id = db.Column(db.String(200), unique=False)
     collection = db.relationship("Collections")
     contract_id = db.Column(db.String(250),unique=False)
     image_url = db.Column(db.String(200),unique=False)

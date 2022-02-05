@@ -160,9 +160,9 @@ def get_collection_by_id(collection_id):
     return jsonify(collection.serialize()),200
 
 
-@api.route('/opensea/<nft_id>', methods=['GET'])
-def get_opensea_metadata(nft_id):
-    nft = NFTs.query.filter(NFTs.nft_id == nft_id).first()
+@api.route('/opensea/<int:collection_id>/<nft_id>', methods=['GET'])
+def get_opensea_metadata(collection_id,nft_id):
+    nft = NFTs.query.filter(NFTs.nft_id == nft_id,NFTs.collection_id == collection_id).first()
     if nft is None:
         return "", 404
 

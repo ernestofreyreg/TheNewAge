@@ -31,7 +31,9 @@ export const Home = () => {
 
   return (
     <div className="text-center mt-5">
-      <h1 className="neonText">The New Age</h1>
+      <h1 className="neonText">
+        The <span id="new">New</span> Age
+      </h1>
       <Button className="coloredbtn" onClick={handleonClick}>
         Create NFT Collection
       </Button>
