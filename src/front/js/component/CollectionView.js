@@ -8,6 +8,7 @@ import {
   Button,
   Form,
 } from "react-bootstrap";
+import { AttributesModelInput } from "./AttributesModelInput";
 
 export function CollectionView(props) {
   return (
@@ -47,12 +48,22 @@ export function CollectionView(props) {
               />
             </InputGroup>
             <InputGroup size="sm" className="mb-3">
-              <FormControl
+              {/* <FormControl
                 aria-label="Small"
                 aria-describedby="inputGroup-sizing-sm"
                 placeholder="Attributes"
                 readOnly={props.readOnly}
-                value={props.value.atttributes}
+                value={props.value.attributes}
+                onChange={(ev) =>
+                  props.onChange({
+                    ...props.value,
+                    attributes: ev.target.value,
+                  })
+                }
+              /> */}
+              <AttributesModelInput
+                readOnly={props.readOnly}
+                value={props.value.attributes}
                 onChange={(ev) =>
                   props.onChange({
                     ...props.value,

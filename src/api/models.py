@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import base64
 # https://nft.storage/
 db = SQLAlchemy()
 
@@ -25,7 +26,7 @@ class NFTs(db.Model):
             "name": self.name,
             "description":self.description,
             "quantity":self.quantity,
-            "attributes":self.attributes,
+            "attributes":base64.b64encode(self.attributes),
             "nft_id":self.nft_id,
             "contract_id":self.contract_id,
             "image_url":self.image_url,
@@ -54,7 +55,7 @@ class Collections(db.Model):
             "id": self.id,
             "name": self.name,
             "description":self.description,
-            "attributes":self.attributes,
+            "attributes":base64.b64encode(self.attributes.encode('ascii')).decode('ascii'),
             "url":self.url,
             "owner_account":self.owner_account,
             "contract_account":self.contract_account,

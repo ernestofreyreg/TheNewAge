@@ -182,3 +182,7 @@ body {
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#cc45ce", endColorstr="#341cd4", GradientType=1 );
   background-repeat: no-repeat;
 }
+
+.attributes-input {
+  text-align: left;
+}

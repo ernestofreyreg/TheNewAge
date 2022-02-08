@@ -14,7 +14,7 @@ export const Home = () => {
       body: JSON.stringify({
         name: "",
         description: "",
-        attributes: "",
+        attributes: JSON.stringify([]),
         url: "",
         owner_account: "",
         contract_account: "",

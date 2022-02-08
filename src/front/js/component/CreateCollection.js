@@ -21,7 +21,7 @@ export function CreateCollection() {
   const [collection, setCollection] = useState({
     name: "",
     description: "",
-    attributes: "",
+    attributes: [],
     url: "",
     mainnet: false,
   });
@@ -105,6 +105,7 @@ export function CreateCollection() {
           body: JSON.stringify({
             ...data,
             ...collection,
+            attributes: JSON.stringify(collection.attributes),
             nfts: nfts,
           }),
         }
@@ -123,7 +124,7 @@ export function CreateCollection() {
       setCollection({
         name: data.name,
         description: data.description,
-        attributes: data.attributes,
+        attributes: JSON.parse(data.attributes),
         url: data.url,
         mainnet: data.mainnet,
       });
